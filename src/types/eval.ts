@@ -27,6 +27,9 @@ export interface ModelRecord {
   gsm8kScore: number;
   mmluScore: number;
   humanEvalScore: number;
+  precisionScore?: number; // 0 - 100 token/entity precision
+  recallScore?: number; // 0 - 100 factual needle recall
+  f1Score?: number; // 0 - 100 harmonic F1 score
   latencyP50Ms: number;
   latencyP95Ms: number;
   fineTuningMethod?: 'sft' | 'dpo' | 'kto' | 'orpo' | 'none';
