@@ -1,0 +1,49 @@
+{
+  "entities": {
+    "models": {
+      "title": "Model Record",
+      "description": "Registry of frontier LLMs and fine-tuned SLMs with architectural parameters and quantization specifications",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "family": { "type": "string" },
+        "tier": { "type": "string", "enum": ["foundation_llm", "fine_tuned_slm", "base_slm"] },
+        "parameters_b": { "type": "number" },
+        "quantization": { "type": "string", "enum": ["fp16", "q8", "q4_k_m", "int4"] },
+        "context_window": { "type": "number" },
+        "cost_per_m_tokens": { "type": "number" },
+        "tokens_per_sec": { "type": "number" },
+        "memory_gb": { "type": "number" }
+      },
+      "required": ["name", "family", "tier", "parameters_b", "quantization"]
+    },
+    "evaluation_runs": {
+      "title": "Evaluation Run Batch",
+      "description": "Execution batch across models and benchmark task sets",
+      "type": "object",
+      "properties": {
+        "suite_name": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "running", "completed"] },
+        "models": { "type": "array", "items": { "type": "string" } },
+        "total_tasks": { "type": "number" },
+        "completed_at": { "type": "string" }
+      },
+      "required": ["suite_name", "status"]
+    },
+    "checkpoints": {
+      "title": "Model Checkpoint",
+      "description": "Epoch and step iteration progression during fine-tuning",
+      "type": "object",
+      "properties": {
+        "model_id": { "type": "string" },
+        "epoch": { "type": "number" },
+        "step": { "type": "number" },
+        "train_loss": { "type": "number" },
+        "val_loss": { "type": "number" },
+        "alignment_type": { "type": "string" },
+        "win_rate": { "type": "number" }
+      },
+      "required": ["model_id", "epoch", "step"]
+    }
+  }
+}

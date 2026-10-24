@@ -1,0 +1,6 @@
+{
+  "name": "ApexEval: LLM & SLM Evaluation Intelligence",
+  "description": "High-performance evaluation platform to benchmark, dissect, and compare frontier LLMs and fine-tuned Small Language Models (SLMs) with multidimensional metrics, LLM-as-a-judge, and quantization profiling.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
