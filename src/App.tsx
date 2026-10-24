@@ -15,13 +15,15 @@ import { JudgeRubricStudio } from './components/rubrics/JudgeRubricStudio.tsx';
 import { DriftAlignmentConsole } from './components/drift/DriftAlignmentConsole.tsx';
 import { NewRunModal } from './components/common/NewRunModal.tsx';
 import { ModelHealthReportModal } from './components/common/ModelHealthReportModal.tsx';
+import { SettingsThresholdModal } from './components/common/SettingsThresholdModal.tsx';
+import { ThresholdAlertBanner } from './components/common/ThresholdAlertBanner.tsx';
 import {
   INITIAL_MODELS,
   INITIAL_CHECKPOINTS,
   INITIAL_BENCHMARK_SUITES,
   INITIAL_JUDGE_RUBRIC,
 } from './lib/initialData.ts';
-import { ModelRecord, RedisCacheStats } from './types/eval.ts';
+import { ModelRecord, RedisCacheStats, ThresholdAlertSettings } from './types/eval.ts';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -41,7 +43,19 @@ function ApexEvalApp() {
   );
   const [isNewRunModalOpen, setIsNewRunModalOpen] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isClearingCache, setIsClearingCache] = useState(false);
+
+  // Threshold alert settings state
+  const [thresholdSettings, setThresholdSettings] = useState<ThresholdAlertSettings>({
+    minWinRatePercent: 80.0,
+    minReasoningScore: 75.0,
+    maxPsiDrift: 0.15,
+    maxLossGap: 0.30,
+    maxLatencyP95Ms: 250,
+    maxHallucinationRatePercent: 5.0,
+    enableEmailAlerts: true,
+  });
 
   // Models, Checkpoints, Suites state
   const [models, setModels] = useState<ModelRecord[]>(INITIAL_MODELS);
@@ -124,6 +138,7 @@ function ApexEvalApp() {
         onSelectTab={setActiveTab}
         onOpenNewRun={() => setIsNewRunModalOpen(true)}
         onOpenReportModal={() => setIsReportModalOpen(true)}
+        onOpenSettingsModal={() => setIsSettingsModalOpen(true)}
         cacheStats={cacheStats || null}
         onRefreshCache={refetchCacheStats}
         searchQuery={searchQuery}
@@ -132,6 +147,14 @@ function ApexEvalApp() {
         checkpoints={checkpoints}
         onSelectModel={handleSelectModelFromSearch}
         onSelectCheckpoint={handleSelectCheckpointFromSearch}
+      />
+
+      {/* Real-Time Threshold Alert Banner */}
+      <ThresholdAlertBanner
+        settings={thresholdSettings}
+        models={models}
+        checkpoints={checkpoints}
+        onOpenSettings={() => setIsSettingsModalOpen(true)}
       />
 
       {/* Redis Cache Telemetry Banner */}
@@ -200,6 +223,16 @@ function ApexEvalApp() {
       <ModelHealthReportModal
         isOpen={isReportModalOpen}
         onClose={() => setIsReportModalOpen(false)}
+        models={models}
+        checkpoints={checkpoints}
+      />
+
+      {/* Performance Thresholds & Alert Settings Modal */}
+      <SettingsThresholdModal
+        isOpen={isSettingsModalOpen}
+        onClose={() => setIsSettingsModalOpen(false)}
+        settings={thresholdSettings}
+        onUpdateSettings={setThresholdSettings}
         models={models}
         checkpoints={checkpoints}
       />

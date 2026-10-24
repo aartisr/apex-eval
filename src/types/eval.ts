@@ -156,3 +156,13 @@ export interface RedisCacheStats {
   memoryBytes: number;
   avgLatencySavedMs: number;
 }
+
+export interface ThresholdAlertSettings {
+  minWinRatePercent: number; // e.g. 80.0%
+  minReasoningScore: number; // e.g. 75.0
+  maxPsiDrift: number; // e.g. 0.15
+  maxLossGap: number; // e.g. 0.30
+  maxLatencyP95Ms: number; // e.g. 250 ms
+  maxHallucinationRatePercent: number; // e.g. 5.0%
+  enableEmailAlerts?: boolean;
+}

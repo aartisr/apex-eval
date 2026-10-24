@@ -10,6 +10,7 @@ import {
   Layers,
   ArrowRight,
   FileText,
+  Settings,
 } from 'lucide-react';
 import { RedisCacheStats, ModelRecord, CheckpointRecord } from '../types/eval.ts';
 
@@ -18,6 +19,7 @@ interface NavbarProps {
   onSelectTab: (tab: 'matrix' | 'arena' | 'checkpoints' | 'benchmarks' | 'rubric' | 'drift') => void;
   onOpenNewRun: () => void;
   onOpenReportModal: () => void;
+  onOpenSettingsModal: () => void;
   cacheStats: RedisCacheStats | null;
   onRefreshCache: () => void;
   searchQuery: string;
@@ -33,6 +35,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onSelectTab,
   onOpenNewRun,
   onOpenReportModal,
+  onOpenSettingsModal,
   cacheStats,
   onRefreshCache,
   searchQuery,
@@ -343,6 +346,14 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             <FileText className="h-3.5 w-3.5 text-indigo-400" />
             <span className="hidden md:inline">Health Report</span>
+          </button>
+
+          <button
+            onClick={onOpenSettingsModal}
+            className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white shadow-sm transition-all shrink-0"
+            title="Performance Threshold & Alert Settings"
+          >
+            <Settings className="h-4 w-4" />
           </button>
 
           <button
