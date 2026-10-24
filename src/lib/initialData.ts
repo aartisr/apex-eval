@@ -256,7 +256,9 @@ export const INITIAL_CHECKPOINTS: CheckpointRecord[] = [
     reasoningScore: 58.0,
     factualAccuracy: 67.4,
     memoryGB: 5.2,
-    notes: 'Initial pre-trained weights prior to downstream fine-tuning.'
+    notes: 'Initial pre-trained weights prior to downstream fine-tuning.',
+    tags: ['#Base-Weights', '#Un-Aligned', '#FP16'],
+    markdownAnnotation: '### Base Weights Baseline\n- Unaligned pre-trained model.\n- **Risk**: High hallucination rate (9.8%) on multi-step math derivations.\n- **Val Loss**: `2.91`',
   },
   {
     id: 'cp-1',
@@ -272,7 +274,9 @@ export const INITIAL_CHECKPOINTS: CheckpointRecord[] = [
     reasoningScore: 69.4,
     factualAccuracy: 75.1,
     memoryGB: 5.2,
-    notes: 'Initial supervised fine-tuning on 100k curated CoT rationales.'
+    notes: 'Initial supervised fine-tuning on 100k curated CoT rationales.',
+    tags: ['#SFT-Phase-1', '#CoT-Warmup'],
+    markdownAnnotation: '### Supervised Fine-Tuning (SFT Epoch 1)\n- Trained on 100k high-quality chain-of-thought rationales.\n- Reduced validation loss significantly from `2.91` to `1.55`.\n- Basic arithmetic syntax acquired.',
   },
   {
     id: 'cp-2',
@@ -288,7 +292,9 @@ export const INITIAL_CHECKPOINTS: CheckpointRecord[] = [
     reasoningScore: 78.0,
     factualAccuracy: 81.2,
     memoryGB: 5.2,
-    notes: 'Loss converged on syntax structure; minor hallucination on edge cases.'
+    notes: 'Loss converged on syntax structure; minor hallucination on edge cases.',
+    tags: ['#SFT-Phase-2', '#Syntax-Converged'],
+    markdownAnnotation: '### SFT Epoch 2 Convergence\n- Syntax structure stabilized.\n- Win rate increased to **79.1%**.\n- Minor hallucinations remain on edge-case word problems.',
   },
   {
     id: 'cp-3',
@@ -304,7 +310,9 @@ export const INITIAL_CHECKPOINTS: CheckpointRecord[] = [
     reasoningScore: 87.5,
     factualAccuracy: 87.9,
     memoryGB: 5.2,
-    notes: 'DPO preference pairs applied to penalize false derivations and arithmetic lapses.'
+    notes: 'DPO preference pairs applied to penalize false derivations and arithmetic lapses.',
+    tags: ['#DPO-Optimal', '#Math-Specialized', '#Golden-Weights'],
+    markdownAnnotation: '### DPO Optimal Convergence Checkpoint\n- **Direct Preference Optimization (DPO)** with $\\beta = 0.1$.\n- **Reasoning Score**: `87.5`.\n- **Generalization**: Optimal stopping point before validation loss divergence.\n- **Action Item**: Selected as golden candidate for 4-bit quantization.',
   },
   {
     id: 'cp-4',
@@ -320,7 +328,9 @@ export const INITIAL_CHECKPOINTS: CheckpointRecord[] = [
     reasoningScore: 89.0,
     factualAccuracy: 88.6,
     memoryGB: 2.8,
-    notes: 'Quantized to Q8: 46% memory reduction with zero noticeable accuracy degradation.'
+    notes: 'Quantized to Q8: 46% memory reduction with zero noticeable accuracy degradation.',
+    tags: ['#Q8-Quantized', '#Low-Loss'],
+    markdownAnnotation: '### 8-Bit Quantized Checkpoint (Q8)\n- Memory footprint dropped to `2.8 GB`.\n- Win rate maintained at **88.0%**.',
   },
   {
     id: 'cp-5',
@@ -336,7 +346,9 @@ export const INITIAL_CHECKPOINTS: CheckpointRecord[] = [
     reasoningScore: 89.2,
     factualAccuracy: 88.4,
     memoryGB: 1.8,
-    notes: 'Final production edge build: 1.8GB total VRAM footprint, 285 tokens/sec.'
+    notes: 'Final production edge build: 1.8GB total VRAM footprint, 285 tokens/sec.',
+    tags: ['#Production-Candidate', '#Q4-Quantized', '#Edge-Deployable', '#SLA-Verified'],
+    markdownAnnotation: '### Production Edge Candidate (Q4_K_M)\n- **VRAM Footprint**: `1.8 GB` (65% reduction vs FP16).\n- **Inference Speed**: `285 tok/s` on local NPU / commodity GPU.\n- **SLA Audit**: `99.4%` strict JSON protocol adherence.\n- **Status**: Approved for local edge deployment.',
   }
 ];
 

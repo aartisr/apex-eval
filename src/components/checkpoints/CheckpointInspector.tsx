@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   GitCommit,
   TrendingUp,
@@ -9,15 +9,81 @@ import {
   ShieldCheck,
   Zap,
   HardDrive,
+  Tag,
+  FileText,
+  Edit3,
+  Eye,
+  Plus,
+  X,
+  Save,
+  Check,
+  Bookmark,
+  Bold,
+  Italic,
+  List,
+  Code,
 } from 'lucide-react';
 import { CheckpointRecord, QuantizationType } from '../../types/eval.ts';
 import { QuantizationTradeoffScatter } from './QuantizationTradeoffScatter.tsx';
+import { db } from '../../lib/firebase.ts';
+import { doc, setDoc, onSnapshot } from 'firebase/firestore';
 
 interface CheckpointInspectorProps {
   checkpoints: CheckpointRecord[];
   searchQuery?: string;
   selectedCheckpointIdOverride?: string;
 }
+
+const formatInlineMarkdown = (text: string) => {
+  const parts = text.split(/(\*\*.*?\*\*|`.*?`)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={i} className="font-semibold text-white">{part.slice(2, -2)}</strong>;
+    }
+    if (part.startsWith('`') && part.endsWith('`')) {
+      return <code key={i} className="bg-slate-900 text-emerald-300 font-mono text-[11px] px-1.5 py-0.5 rounded border border-slate-800">{part.slice(1, -1)}</code>;
+    }
+    return part;
+  });
+};
+
+const renderSimpleMarkdown = (mdText: string) => {
+  if (!mdText || !mdText.trim()) {
+    return <p className="text-slate-500 italic text-xs">No custom markdown annotation provided yet. Click &quot;Edit Markdown&quot; to add evaluation notes.</p>;
+  }
+
+  const lines = mdText.split('\n');
+  return (
+    <div className="space-y-1.5 text-xs text-slate-200">
+      {lines.map((line, idx) => {
+        if (line.startsWith('### ')) {
+          return <h3 key={idx} className="text-xs font-bold text-indigo-300 mt-2 mb-1 uppercase tracking-wider">{line.replace('### ', '')}</h3>;
+        } else if (line.startsWith('## ')) {
+          return <h2 key={idx} className="text-sm font-bold text-white mt-2 mb-1">{line.replace('## ', '')}</h2>;
+        } else if (line.startsWith('# ')) {
+          return <h1 key={idx} className="text-base font-bold text-white mt-2 mb-1">{line.replace('# ', '')}</h1>;
+        } else if (line.startsWith('- ') || line.startsWith('* ')) {
+          const content = line.substring(2);
+          return (
+            <div key={idx} className="flex items-start gap-2 ml-1">
+              <span className="text-indigo-400 font-bold">•</span>
+              <span>{formatInlineMarkdown(content)}</span>
+            </div>
+          );
+        } else if (line.startsWith('> ')) {
+          return (
+            <blockquote key={idx} className="border-l-2 border-indigo-500 pl-3 py-1 text-slate-300 italic bg-indigo-950/20 rounded-r text-[11px]">
+              {formatInlineMarkdown(line.replace('> ', ''))}
+            </blockquote>
+          );
+        } else if (line.trim() === '') {
+          return <div key={idx} className="h-0.5" />;
+        }
+        return <p key={idx} className="leading-relaxed">{formatInlineMarkdown(line)}</p>;
+      })}
+    </div>
+  );
+};
 
 export const CheckpointInspector: React.FC<CheckpointInspectorProps> = ({
   checkpoints,
@@ -35,23 +101,127 @@ export const CheckpointInspector: React.FC<CheckpointInspectorProps> = ({
     }
   }, [selectedCheckpointIdOverride]);
 
+  // Annotations & Tags State mapped by checkpoint ID
+  const [annotationsMap, setAnnotationsMap] = useState<Record<string, { tags: string[]; annotation: string }>>(() => {
+    const initial: Record<string, { tags: string[]; annotation: string }> = {};
+    checkpoints.forEach((cp) => {
+      initial[cp.id] = {
+        tags: cp.tags || ['#Evaluation-Candidate'],
+        annotation: cp.markdownAnnotation || `### Evaluation Notes for ${cp.modelName}\n- **Loss**: \`${cp.trainLoss.toFixed(2)}\`\n- **Win Rate**: **${cp.winRate}%**`,
+      };
+    });
+    return initial;
+  });
+
+  const [activeEditorTab, setActiveEditorTab] = useState<'preview' | 'edit'>('preview');
+  const [editingAnnotation, setEditingAnnotation] = useState<string>('');
+  const [newTagInput, setNewTagInput] = useState<string>('');
+  const [isSavedInFirestore, setIsSavedInFirestore] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Sync editingAnnotation state whenever selectedCheckpointId changes
+  useEffect(() => {
+    if (selectedCheckpointId && annotationsMap[selectedCheckpointId]) {
+      setEditingAnnotation(annotationsMap[selectedCheckpointId].annotation || '');
+    }
+  }, [selectedCheckpointId, annotationsMap]);
+
   const filteredCheckpoints = React.useMemo(() => {
     if (!searchQuery || !searchQuery.trim()) return checkpoints;
     const q = searchQuery.toLowerCase();
-    const matched = checkpoints.filter(
-      (cp) =>
+    const matched = checkpoints.filter((cp) => {
+      const data = annotationsMap[cp.id];
+      const hasMatchingTag = data?.tags.some((t) => t.toLowerCase().includes(q));
+      const hasMatchingAnnotation = data?.annotation.toLowerCase().includes(q);
+      return (
         cp.modelName.toLowerCase().includes(q) ||
         cp.alignmentMethod.toLowerCase().includes(q) ||
         cp.quantization.toLowerCase().includes(q) ||
-        cp.notes.toLowerCase().includes(q)
-    );
+        cp.notes.toLowerCase().includes(q) ||
+        hasMatchingTag ||
+        hasMatchingAnnotation
+      );
+    });
     return matched.length > 0 ? matched : checkpoints;
-  }, [checkpoints, searchQuery]);
+  }, [checkpoints, searchQuery, annotationsMap]);
 
   const selectedCheckpoint =
     filteredCheckpoints.find((c) => c.id === selectedCheckpointId) ||
     filteredCheckpoints[filteredCheckpoints.length - 1] ||
     checkpoints[0];
+
+  const currentAnnotationData = annotationsMap[selectedCheckpoint.id] || { tags: [], annotation: '' };
+
+  const handleAddTag = () => {
+    if (!newTagInput.trim()) return;
+    let tag = newTagInput.trim();
+    if (!tag.startsWith('#')) tag = `#${tag}`;
+
+    const currentTags = currentAnnotationData.tags || [];
+    if (!currentTags.includes(tag)) {
+      const updatedTags = [...currentTags, tag];
+      const updatedMap = {
+        ...annotationsMap,
+        [selectedCheckpoint.id]: {
+          ...currentAnnotationData,
+          tags: updatedTags,
+        },
+      };
+      setAnnotationsMap(updatedMap);
+      saveToFirestore(selectedCheckpoint.id, updatedTags, currentAnnotationData.annotation);
+    }
+    setNewTagInput('');
+  };
+
+  const handleRemoveTag = (tagToRemove: string) => {
+    const updatedTags = (currentAnnotationData.tags || []).filter((t) => t !== tagToRemove);
+    const updatedMap = {
+      ...annotationsMap,
+      [selectedCheckpoint.id]: {
+        ...currentAnnotationData,
+        tags: updatedTags,
+      },
+    };
+    setAnnotationsMap(updatedMap);
+    saveToFirestore(selectedCheckpoint.id, updatedTags, currentAnnotationData.annotation);
+  };
+
+  const handleSaveAnnotation = async () => {
+    setIsSaving(true);
+    const updatedMap = {
+      ...annotationsMap,
+      [selectedCheckpoint.id]: {
+        ...currentAnnotationData,
+        annotation: editingAnnotation,
+      },
+    };
+    setAnnotationsMap(updatedMap);
+    await saveToFirestore(selectedCheckpoint.id, currentAnnotationData.tags, editingAnnotation);
+    setIsSaving(false);
+    setIsSavedInFirestore(true);
+    setTimeout(() => setIsSavedInFirestore(false), 2500);
+  };
+
+  const saveToFirestore = async (cpId: string, tags: string[], annotation: string) => {
+    try {
+      await setDoc(
+        doc(db, 'checkpoint_annotations', cpId),
+        {
+          cpId,
+          tags,
+          annotation,
+          updatedAt: new Date().toISOString(),
+        },
+        { merge: true }
+      );
+    } catch (e) {
+      console.warn('Firestore annotation save warning:', e);
+    }
+  };
+
+  const insertMarkdownFormatting = (prefix: string, suffix: string = '') => {
+    setEditingAnnotation((prev) => prev + `${prefix}Text${suffix}`);
+  };
 
   // Base checkpoint for delta calculations
   const baseCheckpoint = checkpoints[0];
@@ -270,6 +440,170 @@ export const CheckpointInspector: React.FC<CheckpointInspectorProps> = ({
 
             <div className="p-3 rounded bg-indigo-950/30 border border-indigo-900/50 text-[11px] text-indigo-300 leading-relaxed">
               <strong>Recommendation:</strong> Deploying the <strong>Q4_K_M</strong> quantized checkpoint yields a 65% memory reduction, allowing real-time 285 tok/s local inference on commodity consumer GPUs or mobile NPUs without sacrificing mathematical reasoning fidelity.
+            </div>
+          </div>
+
+          {/* Custom Markdown Context Annotation & Tagging Studio */}
+          <div className="lg:col-span-3 rounded-lg border border-slate-800 bg-[#0E1526] p-5 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+              <div className="flex items-center gap-2">
+                <FileText className="h-4 w-4 text-indigo-400" />
+                <h3 className="text-sm font-bold text-white font-display">
+                  Evaluation Context Tracking & Custom Markdown Annotations
+                </h3>
+                <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-800/40 px-2 py-0.5 rounded">
+                  Firestore Persisted
+                </span>
+              </div>
+
+              {/* Mode Buttons: Preview / Edit + Save */}
+              <div className="flex items-center gap-2">
+                <div className="flex items-center bg-slate-950 p-1 rounded-lg border border-slate-800 text-xs">
+                  <button
+                    onClick={() => setActiveEditorTab('preview')}
+                    className={`flex items-center gap-1.5 px-3 py-1 rounded transition-all ${
+                      activeEditorTab === 'preview'
+                        ? 'bg-indigo-600 text-white shadow-sm font-semibold'
+                        : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    <Eye className="h-3 w-3" />
+                    <span>Preview</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveEditorTab('edit')}
+                    className={`flex items-center gap-1.5 px-3 py-1 rounded transition-all ${
+                      activeEditorTab === 'edit'
+                        ? 'bg-indigo-600 text-white shadow-sm font-semibold'
+                        : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    <Edit3 className="h-3 w-3" />
+                    <span>Edit Markdown</span>
+                  </button>
+                </div>
+
+                <button
+                  onClick={handleSaveAnnotation}
+                  disabled={isSaving}
+                  className="flex items-center gap-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-1.5 text-xs font-semibold shadow-sm transition-all disabled:opacity-50"
+                >
+                  {isSavedInFirestore ? <Check className="h-3.5 w-3.5" /> : <Save className="h-3.5 w-3.5" />}
+                  <span>{isSaving ? 'Saving...' : isSavedInFirestore ? 'Saved to Firestore!' : 'Save Notes'}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Custom Tags Section */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+                  <Tag className="h-3.5 w-3.5 text-indigo-400" />
+                  Custom Checkpoint Metadata Tags:
+                </span>
+                <span className="text-[10px] text-slate-500">Press Enter or click + Tag to attach custom tags</span>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                {(currentAnnotationData.tags || []).map((t) => (
+                  <span
+                    key={t}
+                    className="inline-flex items-center gap-1.5 text-xs font-mono font-medium text-indigo-300 bg-indigo-950/80 border border-indigo-800/60 px-2.5 py-1 rounded-md"
+                  >
+                    <span>{t}</span>
+                    <button
+                      onClick={() => handleRemoveTag(t)}
+                      className="text-slate-400 hover:text-rose-400 transition-colors p-0.5"
+                      title="Remove Tag"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                ))}
+
+                <div className="flex items-center gap-1">
+                  <input
+                    type="text"
+                    value={newTagInput}
+                    onChange={(e) => setNewTagInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAddTag();
+                      }
+                    }}
+                    placeholder="New tag e.g. #Quantized"
+                    className="w-36 rounded bg-slate-950 border border-slate-800 px-2.5 py-1 text-xs text-slate-200 placeholder-slate-500 focus:border-indigo-500 focus:outline-none"
+                  />
+                  <button
+                    onClick={handleAddTag}
+                    className="p-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 transition-colors"
+                    title="Add Tag"
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Markdown Editor / Preview Box */}
+            <div className="space-y-2 pt-2 border-t border-slate-800/80">
+              {activeEditorTab === 'edit' && (
+                <div className="space-y-2">
+                  {/* Markdown Toolbar */}
+                  <div className="flex items-center gap-1.5 bg-slate-950 p-1.5 rounded border border-slate-800 text-xs text-slate-400">
+                    <button
+                      onClick={() => insertMarkdownFormatting('### ')}
+                      className="p-1 hover:bg-slate-800 rounded hover:text-slate-200 font-bold text-[11px]"
+                      title="Header 3"
+                    >
+                      H3
+                    </button>
+                    <button
+                      onClick={() => insertMarkdownFormatting('**', '**')}
+                      className="p-1 hover:bg-slate-800 rounded hover:text-slate-200"
+                      title="Bold"
+                    >
+                      <Bold className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                      onClick={() => insertMarkdownFormatting('- ')}
+                      className="p-1 hover:bg-slate-800 rounded hover:text-slate-200"
+                      title="Bullet List"
+                    >
+                      <List className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                      onClick={() => insertMarkdownFormatting('> ')}
+                      className="p-1 hover:bg-slate-800 rounded hover:text-slate-200 italic font-mono text-[11px]"
+                      title="Quote"
+                    >
+                      &gt;
+                    </button>
+                    <button
+                      onClick={() => insertMarkdownFormatting('`', '`')}
+                      className="p-1 hover:bg-slate-800 rounded hover:text-slate-200"
+                      title="Inline Code"
+                    >
+                      <Code className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+
+                  <textarea
+                    rows={6}
+                    value={editingAnnotation}
+                    onChange={(e) => setEditingAnnotation(e.target.value)}
+                    placeholder="Type markdown notes e.g., ### Training Notes\n- Verified loss convergence..."
+                    className="w-full rounded-lg bg-slate-950 border border-slate-800 p-3 text-xs font-mono text-slate-200 focus:border-indigo-500 focus:outline-none leading-relaxed"
+                  />
+                </div>
+              )}
+
+              {activeEditorTab === 'preview' && (
+                <div className="p-4 rounded-lg bg-slate-950/80 border border-slate-800/80 min-h-28">
+                  {renderSimpleMarkdown(currentAnnotationData.annotation)}
+                </div>
+              )}
             </div>
           </div>
         </div>

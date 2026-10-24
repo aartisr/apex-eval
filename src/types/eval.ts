@@ -49,6 +49,9 @@ export interface CheckpointRecord {
   factualAccuracy: number;
   memoryGB: number;
   notes: string;
+  // Custom Tags and Markdown Annotations
+  tags?: string[];
+  markdownAnnotation?: string;
   // Overfitting & Alignment Diagnostics
   memorizationIndex?: number; // 0 - 100 verbatim regurgitation score
   oodScore?: number; // Out-of-distribution reasoning score
