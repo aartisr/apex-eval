@@ -31,6 +31,11 @@ export interface ModelRecord {
   recallScore?: number; // 0 - 100 factual needle recall
   f1Score?: number; // 0 - 100 harmonic F1 score
   perplexity?: number; // Exp(val_loss) language modeling perplexity (PPL)
+  // Qualitative NLG & Conversational Dimensions (0 - 100 scale)
+  coherenceScore?: number; // Discourse structure & narrative logical progression
+  fluencyScore?: number; // Grammatical correctness, lexical diversity & natural cadence
+  relevancyScore?: number; // Prompt intent fulfillment & direct topic focus
+  appropriatenessScore?: number; // Contextual tone, register suitability & safety boundaries
   latencyP50Ms: number;
   latencyP95Ms: number;
   fineTuningMethod?: 'sft' | 'dpo' | 'kto' | 'orpo' | 'none';
@@ -48,6 +53,8 @@ export interface CheckpointRecord {
   valLoss: number;
   perplexity?: number; // Language modeling perplexity (PPL)
   precisionScore?: number; // 0 - 100 precision
+  coherenceScore?: number; // Discourse coherence
+  fluencyScore?: number; // Linguistic fluency
   alignmentMethod: 'sft' | 'dpo' | 'kto' | 'orpo';
   quantization: QuantizationType;
   winRate: number;
@@ -69,7 +76,7 @@ export interface BenchmarkTask {
   suiteId: string;
   prompt: string;
   referenceAnswer: string;
-  domain: 'reasoning' | 'code' | 'facts' | 'adversarial';
+  domain: 'reasoning' | 'code' | 'facts' | 'adversarial' | 'nlg_linguistics';
   difficulty: 'easy' | 'medium' | 'hard';
 }
 
@@ -85,12 +92,17 @@ export interface BenchmarkSuite {
 export interface JudgeRubric {
   id: string;
   name: string;
+  category?: 'engineering_logic' | 'nlg_linguistics' | 'custom';
   weights: {
-    correctness: number; // e.g. 0.35
-    reasoning: number;   // e.g. 0.25
-    instruction: number; // e.g. 0.20
-    factualSafety: number; // e.g. 0.15
+    correctness: number; // e.g. 0.20
+    reasoning: number;   // e.g. 0.15
+    instruction: number; // e.g. 0.15
+    factualSafety: number; // e.g. 0.10
     conciseness: number; // e.g. 0.05
+    coherence?: number;  // e.g. 0.10 (logical discourse progression)
+    fluency?: number;    // e.g. 0.10 (grammatical purity & natural cadence)
+    relevancy?: number;  // e.g. 0.08 (direct prompt intent adherence)
+    appropriateness?: number; // e.g. 0.07 (tone & register calibration)
   };
   promptTemplate: string;
 }
@@ -103,6 +115,10 @@ export interface JudgeEvaluationResult {
     instruction: number;
     factualSafety: number;
     conciseness: number;
+    coherence?: number;
+    fluency?: number;
+    relevancy?: number;
+    appropriateness?: number;
   };
   critique: string;
   suggestedImprovement: string;

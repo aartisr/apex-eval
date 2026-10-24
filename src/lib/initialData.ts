@@ -24,6 +24,10 @@ export const INITIAL_MODELS: ModelRecord[] = [
     precisionScore: 94.2,
     recallScore: 95.8,
     f1Score: 95.0,
+    coherenceScore: 96.4,
+    fluencyScore: 97.2,
+    relevancyScore: 96.8,
+    appropriatenessScore: 98.1,
     latencyP50Ms: 142,
     latencyP95Ms: 290,
     description: 'Frontier high-throughput foundation model with native multimodality and 1M token context window.'
@@ -51,6 +55,10 @@ export const INITIAL_MODELS: ModelRecord[] = [
     precisionScore: 97.5,
     recallScore: 98.2,
     f1Score: 97.8,
+    coherenceScore: 98.8,
+    fluencyScore: 99.2,
+    relevancyScore: 98.5,
+    appropriatenessScore: 99.4,
     latencyP50Ms: 280,
     latencyP95Ms: 540,
     description: 'Flagship reasoning intelligence for complex mathematical proofs, architecture analysis, and multi-step logic.'
@@ -78,6 +86,10 @@ export const INITIAL_MODELS: ModelRecord[] = [
     precisionScore: 62.4,
     recallScore: 68.1,
     f1Score: 65.1,
+    coherenceScore: 68.2,
+    fluencyScore: 72.4,
+    relevancyScore: 69.5,
+    appropriatenessScore: 71.0,
     latencyP50Ms: 68,
     latencyP95Ms: 124,
     description: 'Raw pre-trained 2.6B open-weights model from Google, unaligned base checkpoint.'
@@ -105,6 +117,10 @@ export const INITIAL_MODELS: ModelRecord[] = [
     precisionScore: 91.4,
     recallScore: 88.6,
     f1Score: 90.0,
+    coherenceScore: 91.2,
+    fluencyScore: 92.5,
+    relevancyScore: 93.8,
+    appropriatenessScore: 94.0,
     latencyP50Ms: 38,
     latencyP95Ms: 72,
     fineTuningMethod: 'dpo',
@@ -134,6 +150,10 @@ export const INITIAL_MODELS: ModelRecord[] = [
     precisionScore: 71.8,
     recallScore: 75.2,
     f1Score: 73.5,
+    coherenceScore: 75.8,
+    fluencyScore: 79.4,
+    relevancyScore: 76.2,
+    appropriatenessScore: 77.5,
     latencyP50Ms: 110,
     latencyP95Ms: 215,
     description: 'Pretrained 8B Meta foundation weights without RLHF alignment.'
@@ -161,6 +181,10 @@ export const INITIAL_MODELS: ModelRecord[] = [
     precisionScore: 92.8,
     recallScore: 91.5,
     f1Score: 92.1,
+    coherenceScore: 93.5,
+    fluencyScore: 94.8,
+    relevancyScore: 95.1,
+    appropriatenessScore: 95.6,
     latencyP50Ms: 64,
     latencyP95Ms: 118,
     fineTuningMethod: 'dpo',
@@ -190,6 +214,10 @@ export const INITIAL_MODELS: ModelRecord[] = [
     precisionScore: 70.2,
     recallScore: 72.0,
     f1Score: 71.1,
+    coherenceScore: 74.0,
+    fluencyScore: 78.1,
+    relevancyScore: 73.5,
+    appropriatenessScore: 76.2,
     latencyP50Ms: 82,
     latencyP95Ms: 155,
     description: 'Microsoft 3.8B compact model pre-trained on high-grade textbook datasets.'
@@ -217,6 +245,10 @@ export const INITIAL_MODELS: ModelRecord[] = [
     precisionScore: 90.5,
     recallScore: 89.2,
     f1Score: 89.8,
+    coherenceScore: 92.0,
+    fluencyScore: 93.4,
+    relevancyScore: 93.1,
+    appropriatenessScore: 94.2,
     latencyP50Ms: 52,
     latencyP95Ms: 96,
     fineTuningMethod: 'orpo',
@@ -246,6 +278,10 @@ export const INITIAL_MODELS: ModelRecord[] = [
     precisionScore: 68.4,
     recallScore: 70.5,
     f1Score: 69.4,
+    coherenceScore: 73.1,
+    fluencyScore: 76.8,
+    relevancyScore: 72.9,
+    appropriatenessScore: 75.0,
     latencyP50Ms: 115,
     latencyP95Ms: 220,
     description: 'Standard 7B weights with sliding window attention.'
@@ -273,6 +309,10 @@ export const INITIAL_MODELS: ModelRecord[] = [
     precisionScore: 88.9,
     recallScore: 87.2,
     f1Score: 88.0,
+    coherenceScore: 90.4,
+    fluencyScore: 91.8,
+    relevancyScore: 92.2,
+    appropriatenessScore: 93.5,
     latencyP50Ms: 67,
     latencyP95Ms: 122,
     fineTuningMethod: 'kto',
@@ -292,6 +332,8 @@ export const INITIAL_CHECKPOINTS: CheckpointRecord[] = [
     valLoss: 2.91,
     perplexity: 18.36,
     precisionScore: 62.4,
+    coherenceScore: 68.2,
+    fluencyScore: 72.4,
     alignmentMethod: 'sft',
     quantization: 'fp16',
     winRate: 64.2,
@@ -300,7 +342,7 @@ export const INITIAL_CHECKPOINTS: CheckpointRecord[] = [
     memoryGB: 5.2,
     notes: 'Initial pre-trained weights prior to downstream fine-tuning.',
     tags: ['#Base-Weights', '#Un-Aligned', '#FP16'],
-    markdownAnnotation: '### Base Weights Baseline\n- Unaligned pre-trained model.\n- **Perplexity**: `18.36 PPL` | **Precision**: `62.4%`.\n- **Risk**: High hallucination rate (9.8%) on multi-step math derivations.',
+    markdownAnnotation: '### Base Weights Baseline\n- Unaligned pre-trained model.\n- **Perplexity**: `18.36 PPL` | **Precision**: `62.4%`.\n- **Linguistic Quality**: Coherence `68.2`, Fluency `72.4`.\n- **Risk**: High hallucination rate (9.8%) on multi-step math derivations.',
   },
   {
     id: 'cp-1',
@@ -312,6 +354,8 @@ export const INITIAL_CHECKPOINTS: CheckpointRecord[] = [
     valLoss: 1.55,
     perplexity: 4.71,
     precisionScore: 71.8,
+    coherenceScore: 76.5,
+    fluencyScore: 79.8,
     alignmentMethod: 'sft',
     quantization: 'fp16',
     winRate: 72.5,
@@ -320,7 +364,7 @@ export const INITIAL_CHECKPOINTS: CheckpointRecord[] = [
     memoryGB: 5.2,
     notes: 'Initial supervised fine-tuning on 100k curated CoT rationales.',
     tags: ['#SFT-Phase-1', '#CoT-Warmup'],
-    markdownAnnotation: '### Supervised Fine-Tuning (SFT Epoch 1)\n- Trained on 100k high-quality chain-of-thought rationales.\n- Reduced validation loss significantly (`2.91` → `1.55`).\n- **Perplexity dropped to 4.71 PPL**; token precision reached **71.8%**.',
+    markdownAnnotation: '### Supervised Fine-Tuning (SFT Epoch 1)\n- Trained on 100k high-quality chain-of-thought rationales.\n- Reduced validation loss significantly (`2.91` → `1.55`).\n- **Perplexity**: `4.71 PPL` | **Coherence**: `76.5` | **Fluency**: `79.8`.\n- Basic arithmetic syntax and discourse structure acquired.',
   },
   {
     id: 'cp-2',
@@ -332,6 +376,8 @@ export const INITIAL_CHECKPOINTS: CheckpointRecord[] = [
     valLoss: 1.02,
     perplexity: 2.77,
     precisionScore: 79.5,
+    coherenceScore: 82.4,
+    fluencyScore: 85.1,
     alignmentMethod: 'sft',
     quantization: 'fp16',
     winRate: 79.1,
@@ -340,7 +386,7 @@ export const INITIAL_CHECKPOINTS: CheckpointRecord[] = [
     memoryGB: 5.2,
     notes: 'Loss converged on syntax structure; minor hallucination on edge cases.',
     tags: ['#SFT-Phase-2', '#Syntax-Converged'],
-    markdownAnnotation: '### SFT Epoch 2 Convergence\n- Syntax structure stabilized.\n- Perplexity down to **2.77 PPL** | Precision **79.5%**.\n- Win rate increased to **79.1%**.',
+    markdownAnnotation: '### SFT Epoch 2 Convergence\n- Syntax structure stabilized.\n- Perplexity down to **2.77 PPL** | Precision **79.5%**.\n- Coherence improved to **82.4**; grammatical fluency **85.1**.',
   },
   {
     id: 'cp-3',
@@ -352,6 +398,8 @@ export const INITIAL_CHECKPOINTS: CheckpointRecord[] = [
     valLoss: 0.68,
     perplexity: 1.97,
     precisionScore: 88.2,
+    coherenceScore: 89.6,
+    fluencyScore: 91.0,
     alignmentMethod: 'dpo',
     quantization: 'fp16',
     winRate: 86.4,
@@ -360,7 +408,7 @@ export const INITIAL_CHECKPOINTS: CheckpointRecord[] = [
     memoryGB: 5.2,
     notes: 'DPO preference pairs applied to penalize false derivations and arithmetic lapses.',
     tags: ['#DPO-Optimal', '#Math-Specialized', '#Golden-Weights'],
-    markdownAnnotation: '### DPO Optimal Convergence Checkpoint\n- **Direct Preference Optimization (DPO)** with $\\beta = 0.1$.\n- **Perplexity**: `1.97 PPL` | **Precision**: `88.2%`.\n- **Action Item**: Selected as golden candidate for 4-bit quantization.',
+    markdownAnnotation: '### DPO Optimal Convergence Checkpoint\n- **Direct Preference Optimization (DPO)** with $\\beta = 0.1$.\n- **Perplexity**: `1.97 PPL` | **Precision**: `88.2%`.\n- **Discourse Coherence**: `89.6` | **Fluency**: `91.0`.\n- Selected as golden candidate for 4-bit quantization.',
   },
   {
     id: 'cp-4',
@@ -372,6 +420,8 @@ export const INITIAL_CHECKPOINTS: CheckpointRecord[] = [
     valLoss: 0.58,
     perplexity: 1.79,
     precisionScore: 89.6,
+    coherenceScore: 90.8,
+    fluencyScore: 92.1,
     alignmentMethod: 'dpo',
     quantization: 'q8',
     winRate: 88.0,
@@ -380,7 +430,7 @@ export const INITIAL_CHECKPOINTS: CheckpointRecord[] = [
     memoryGB: 2.8,
     notes: 'Quantized to Q8: 46% memory reduction with zero noticeable accuracy degradation.',
     tags: ['#Q8-Quantized', '#Low-Loss'],
-    markdownAnnotation: '### 8-Bit Quantized Checkpoint (Q8)\n- Memory footprint dropped to `2.8 GB`.\n- **Perplexity**: `1.79 PPL` | Precision **89.6%**.',
+    markdownAnnotation: '### 8-Bit Quantized Checkpoint (Q8)\n- Memory footprint dropped to `2.8 GB`.\n- **Perplexity**: `1.79 PPL` | Precision **89.6%**.\n- High conversational fluency preserved at `92.1`.',
   },
   {
     id: 'cp-5',
@@ -392,6 +442,8 @@ export const INITIAL_CHECKPOINTS: CheckpointRecord[] = [
     valLoss: 0.56,
     perplexity: 1.75,
     precisionScore: 91.4,
+    coherenceScore: 91.2,
+    fluencyScore: 92.5,
     alignmentMethod: 'dpo',
     quantization: 'q4_K_m',
     winRate: 88.6,
@@ -400,7 +452,7 @@ export const INITIAL_CHECKPOINTS: CheckpointRecord[] = [
     memoryGB: 1.8,
     notes: 'Final production edge build: 1.8GB total VRAM footprint, 285 tokens/sec.',
     tags: ['#Production-Candidate', '#Q4-Quantized', '#Edge-Deployable', '#SLA-Verified'],
-    markdownAnnotation: '### Production Edge Candidate (Q4_K_M)\n- **Perplexity (PPL)**: `1.75 PPL` | **Token Precision**: `91.4%`.\n- **VRAM Footprint**: `1.8 GB` (65% reduction vs FP16).\n- **Inference Speed**: `285 tok/s` on local NPU / commodity GPU.\n- **SLA Audit**: `99.4%` strict JSON protocol adherence.',
+    markdownAnnotation: '### Production Edge Candidate (Q4_K_M)\n- **Perplexity (PPL)**: `1.75 PPL` | **Token Precision**: `91.4%`.\n- **Linguistic Profile**: Coherence `91.2` | Fluency `92.5` | Relevancy `93.8`.\n- **VRAM Footprint**: `1.8 GB` (65% reduction vs FP16).\n- **Inference Speed**: `285 tok/s` on local NPU / commodity GPU.\n- **SLA Audit**: `99.4%` strict JSON protocol adherence.',
   }
 ];
 
@@ -435,6 +487,39 @@ export const INITIAL_BENCHMARK_SUITES: BenchmarkSuite[] = [
         referenceAnswer: 'Active nodes = 128 * (1 - 0.125) = 112 nodes. Active GPUs = 112 * 8 = 896 GPUs. Aggregate throughput = 896 * 450 = 403,200 requests per second.',
         domain: 'reasoning',
         difficulty: 'hard'
+      }
+    ]
+  },
+  {
+    id: 'suite-nlg-linguistics',
+    name: 'Linguistic & Conversational Quality Matrix',
+    domain: 'NLG, Coherence & Fluency',
+    description: 'Empirical multi-turn evaluations measuring discourse coherence, syntactic fluency, query relevancy, and tone appropriateness.',
+    taskCount: 3,
+    tasks: [
+      {
+        id: 'nlg-1',
+        suiteId: 'suite-nlg-linguistics',
+        prompt: 'Provide a structured, executive debrief explaining how a sudden 150 basis-point central bank interest rate hike impacts three distinct economic channels: mortgage lending, corporate capital expenditure, and foreign exchange valuations. Maintain immaculate discourse coherence, logical transitions, and an analytical tone without straying into unrelated fiscal policies.',
+        referenceAnswer: 'Channel 1 (Mortgage Lending): Increases borrowing costs, depresses housing affordability and cooling purchase volume. Channel 2 (Corporate CapEx): Raises hurdle rate for long-term investments, reducing debt-financed expansion. Channel 3 (Forex): Enhances domestic yield differential, attracting capital inflows and appreciating the domestic currency. Transitions connect each channel via monetary transmission mechanism.',
+        domain: 'nlg_linguistics',
+        difficulty: 'hard'
+      },
+      {
+        id: 'nlg-2',
+        suiteId: 'suite-nlg-linguistics',
+        prompt: 'A tier-1 enterprise customer is extremely frustrated because their data synchronization job timed out during an overnight migration window. Write an empathetic, highly professional, and reassuring operational response that acknowledges their disruption, clearly outlines the root cause analysis steps being undertaken, and provides a guaranteed 2-hour checkpoint. The response must score perfectly on appropriateness, fluency, and direct relevancy without evasive jargon.',
+        referenceAnswer: 'Demonstrate genuine operational empathy, take ownership without defensive deflection, articulate immediate remediation steps (increasing worker node concurrency and reviewing lock contention), and commit to a firm 2-hour update timestamp.',
+        domain: 'nlg_linguistics',
+        difficulty: 'medium'
+      },
+      {
+        id: 'nlg-3',
+        suiteId: 'suite-nlg-linguistics',
+        prompt: 'Explain the concept of quantum entanglement to a non-physicist software engineer. Your response must use an intuitive distributed systems or cryptography analogy, maintain strict conceptual coherence throughout, exhibit natural and fluid prose, and directly address the observer effect without sensationalism.',
+        referenceAnswer: 'Uses an analogy of synchronized cryptographic key pairs or distributed state consensus where measuring one state instantly defines the correlated counterpart, while maintaining scientific accuracy and accessible fluency.',
+        domain: 'nlg_linguistics',
+        difficulty: 'medium'
       }
     ]
   },
@@ -484,13 +569,18 @@ export const INITIAL_BENCHMARK_SUITES: BenchmarkSuite[] = [
 
 export const INITIAL_JUDGE_RUBRIC: JudgeRubric = {
   id: 'standard-engineering-rubric',
-  name: 'Rigorous Multi-Dimensional Engineering Rubric',
+  name: 'Multi-Dimensional Engineering & Logic Rubric',
+  category: 'engineering_logic',
   weights: {
-    correctness: 0.35,
-    reasoning: 0.25,
-    instruction: 0.20,
+    correctness: 0.25,
+    reasoning: 0.20,
+    instruction: 0.15,
     factualSafety: 0.15,
-    conciseness: 0.05
+    conciseness: 0.05,
+    coherence: 0.08,
+    fluency: 0.05,
+    relevancy: 0.04,
+    appropriateness: 0.03
   },
   promptTemplate: `You are a world-class AI model evaluation arbiter adhering to Nobel-cadre scientific rigor.
 Evaluate the model completion against the prompt and reference answer.
@@ -499,5 +589,32 @@ Grade strictly on:
 2. Reasoning Clarity & Derivation Depth (0-100)
 3. Instruction Following & Constraint Adherence (0-100)
 4. Factual Accuracy & Hallucination Resistance (0-100)
-5. Conciseness & Precision (0-100)`
+5. Conciseness & Information Density (0-100)
+6. Discourse Coherence & Narrative Structure (0-100)
+7. Grammatical Fluency & Natural Phrasing (0-100)
+8. Topical Relevancy to Prompt Intent (0-100)
+9. Contextual Appropriateness & Tone Calibration (0-100)`
+};
+
+export const INITIAL_NLG_RUBRIC: JudgeRubric = {
+  id: 'nlg-linguistic-rubric',
+  name: 'NLG Linguistic & Conversational Quality Rubric',
+  category: 'nlg_linguistics',
+  weights: {
+    coherence: 0.25,
+    fluency: 0.25,
+    relevancy: 0.20,
+    appropriateness: 0.15,
+    instruction: 0.05,
+    factualSafety: 0.05,
+    correctness: 0.03,
+    reasoning: 0.01,
+    conciseness: 0.01
+  },
+  promptTemplate: `You are an expert computational linguist evaluating Natural Language Generation (NLG) and conversational excellence.
+Evaluate the completion with deep focus on linguistic craftsmanship:
+1. Coherence (0-100): Logical flow, thematic unity, clear narrative transitions.
+2. Fluency (0-100): Grammatical perfection, natural lexical variety, absence of robotic stiltedness.
+3. Relevancy (0-100): Precision in addressing user intent without unasked tangents.
+4. Appropriateness (0-100): Tone alignment, professional persona, contextual respect.`
 };

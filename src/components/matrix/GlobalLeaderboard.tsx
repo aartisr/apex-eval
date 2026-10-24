@@ -20,7 +20,7 @@ interface GlobalLeaderboardProps {
   onOpenDiff: (modelId: string) => void;
 }
 
-export type LeaderboardMetric = 'aggregate' | 'accuracy' | 'perplexity' | 'speed' | 'efficiency';
+export type LeaderboardMetric = 'aggregate' | 'accuracy' | 'linguistic' | 'perplexity' | 'speed' | 'efficiency';
 
 export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({
   models,
@@ -53,6 +53,14 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({
           m.mmluScore * 0.20;
         primaryMetricLabel = 'Factual Acc';
         primaryMetricValue = `${m.factualAccuracy}%`;
+      } else if (activeMetric === 'linguistic') {
+        const coh = m.coherenceScore || 85.0;
+        const flu = m.fluencyScore || 85.0;
+        const rel = m.relevancyScore || 85.0;
+        const app = m.appropriatenessScore || 85.0;
+        score = coh * 0.30 + flu * 0.25 + rel * 0.25 + app * 0.20;
+        primaryMetricLabel = 'Coherence & Fluency';
+        primaryMetricValue = `Coh ${coh.toFixed(1)} · Flu ${flu.toFixed(1)} · Rel ${rel.toFixed(0)}%`;
       } else if (activeMetric === 'perplexity') {
         const ppl = m.perplexity || 5.0;
         const prec = m.precisionScore || 85.0;
@@ -101,7 +109,7 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({
               Global Model Evaluation Leaderboard
             </h3>
             <p className="text-xs text-slate-400 mt-0.5">
-              Rank models across aggregate index, reasoning accuracy, perplexity & precision, execution speed, and hardware efficiency.
+              Rank models across aggregate index, reasoning accuracy, linguistic quality (coherence, fluency, relevancy, appropriateness), perplexity, and execution speed.
             </p>
           </div>
         </div>
@@ -133,14 +141,26 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({
           </button>
 
           <button
-            onClick={() => setActiveMetric('perplexity')}
+            onClick={() => setActiveMetric('linguistic')}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded font-semibold transition-all ${
-              activeMetric === 'perplexity'
+              activeMetric === 'linguistic'
                 ? 'bg-purple-600 text-white shadow-sm'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
+            title="Evaluate discourse coherence, grammatical fluency, relevancy, and appropriateness"
           >
             <Sparkles className="h-3.5 w-3.5" />
+            <span>Linguistic Quality (NLG)</span>
+          </button>
+
+          <button
+            onClick={() => setActiveMetric('perplexity')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded font-semibold transition-all ${
+              activeMetric === 'perplexity'
+                ? 'bg-indigo-600 text-white shadow-sm'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
             <span>Perplexity & Precision</span>
           </button>
 
@@ -281,10 +301,21 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({
                 <th className="py-2.5 px-3 w-12 text-center">Rank</th>
                 <th className="py-2.5 px-3">Model</th>
                 <th className="py-2.5 px-3 font-mono">Leaderboard Index</th>
-                <th className="py-2.5 px-3 font-mono">Perplexity (PPL)</th>
-                <th className="py-2.5 px-3 font-mono">Precision</th>
-                <th className="py-2.5 px-3 font-mono">Win Rate</th>
-                <th className="py-2.5 px-3 font-mono">Latency P50</th>
+                {activeMetric === 'linguistic' ? (
+                  <>
+                    <th className="py-2.5 px-3 font-mono text-purple-300">Coherence</th>
+                    <th className="py-2.5 px-3 font-mono text-emerald-300">Fluency</th>
+                    <th className="py-2.5 px-3 font-mono text-indigo-300">Relevancy</th>
+                    <th className="py-2.5 px-3 font-mono text-amber-300">Appropriateness</th>
+                  </>
+                ) : (
+                  <>
+                    <th className="py-2.5 px-3 font-mono">Perplexity (PPL)</th>
+                    <th className="py-2.5 px-3 font-mono">Precision</th>
+                    <th className="py-2.5 px-3 font-mono">Win Rate</th>
+                    <th className="py-2.5 px-3 font-mono">Latency P50</th>
+                  </>
+                )}
                 <th className="py-2.5 px-3 text-right">Actions</th>
               </tr>
             </thead>
@@ -302,10 +333,21 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({
                       </div>
                     </td>
                     <td className="py-2.5 px-3 font-bold text-amber-400">{item.calculatedScore} pts</td>
-                    <td className="py-2.5 px-3 text-purple-300 font-semibold">{m.perplexity ? `${m.perplexity.toFixed(2)} PPL` : 'N/A'}</td>
-                    <td className="py-2.5 px-3 text-emerald-400 font-semibold">{m.precisionScore ? `${m.precisionScore.toFixed(1)}%` : 'N/A'}</td>
-                    <td className="py-2.5 px-3 text-slate-300">{m.winRate}%</td>
-                    <td className="py-2.5 px-3 text-slate-300">{m.latencyP50Ms} ms</td>
+                    {activeMetric === 'linguistic' ? (
+                      <>
+                        <td className="py-2.5 px-3 text-purple-300 font-semibold">{m.coherenceScore ? `${m.coherenceScore.toFixed(1)}` : '85.0'}</td>
+                        <td className="py-2.5 px-3 text-emerald-300 font-semibold">{m.fluencyScore ? `${m.fluencyScore.toFixed(1)}` : '85.0'}</td>
+                        <td className="py-2.5 px-3 text-indigo-300 font-semibold">{m.relevancyScore ? `${m.relevancyScore.toFixed(1)}%` : '85.0%'}</td>
+                        <td className="py-2.5 px-3 text-amber-300 font-semibold">{m.appropriatenessScore ? `${m.appropriatenessScore.toFixed(1)}%` : '85.0%'}</td>
+                      </>
+                    ) : (
+                      <>
+                        <td className="py-2.5 px-3 text-purple-300 font-semibold">{m.perplexity ? `${m.perplexity.toFixed(2)} PPL` : 'N/A'}</td>
+                        <td className="py-2.5 px-3 text-emerald-400 font-semibold">{m.precisionScore ? `${m.precisionScore.toFixed(1)}%` : 'N/A'}</td>
+                        <td className="py-2.5 px-3 text-slate-300">{m.winRate}%</td>
+                        <td className="py-2.5 px-3 text-slate-300">{m.latencyP50Ms} ms</td>
+                      </>
+                    )}
                     <td className="py-2.5 px-3 text-right font-sans">
                       <div className="flex items-center justify-end gap-1.5">
                         <button

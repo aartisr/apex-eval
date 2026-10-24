@@ -180,12 +180,16 @@ ${referenceAnswer || 'Evaluate strictly on intrinsic logic, factual soundness, a
 Candidate Model Output (${modelName || 'Candidate Model'}):
 ${modelOutput}
 
-Evaluate the candidate completion against the following 5 dimensions on a 0-100 scale:
+Evaluate the candidate completion across both cognitive reasoning and linguistic NLG dimensions on a 0-100 scale:
 1. correctness: Accuracy of arithmetic, logic, syntax, or reasoning deductions.
 2. reasoning: Step-by-step clarity, sound chain-of-thought, and lack of conceptual gaps.
 3. instruction: Following all user formatting, constraints, and negative constraints.
 4. factualSafety: Factual accuracy, absence of hallucinations, and grounded assertions.
 5. conciseness: High information density without redundant filler.
+6. coherence: Logical discourse structure, topical unity, and smooth narrative transitions.
+7. fluency: Grammatical purity, natural phrasing, lexical variety, and syntactic elegance.
+8. relevancy: Direct responsiveness to prompt intent without unasked digressions.
+9. appropriateness: Contextual tone calibration, register suitability, and boundary adherence.
 
 Return ONLY a valid JSON object matching this schema:
 {
@@ -195,7 +199,11 @@ Return ONLY a valid JSON object matching this schema:
     "reasoning": number (0-100),
     "instruction": number (0-100),
     "factualSafety": number (0-100),
-    "conciseness": number (0-100)
+    "conciseness": number (0-100),
+    "coherence": number (0-100),
+    "fluency": number (0-100),
+    "relevancy": number (0-100),
+    "appropriateness": number (0-100)
   },
   "critique": "Concise 2-3 sentence technical evaluation of strengths and flaws",
   "suggestedImprovement": "Concrete actionable guidance for next fine-tuning iteration"
@@ -223,9 +231,13 @@ Return ONLY a valid JSON object matching this schema:
           instruction: parsed.criteriaScores?.instruction || 85,
           factualSafety: parsed.criteriaScores?.factualSafety || 85,
           conciseness: parsed.criteriaScores?.conciseness || 85,
+          coherence: parsed.criteriaScores?.coherence || 88,
+          fluency: parsed.criteriaScores?.fluency || 90,
+          relevancy: parsed.criteriaScores?.relevancy || 89,
+          appropriateness: parsed.criteriaScores?.appropriateness || 92,
         },
-        critique: parsed.critique || 'Evaluation completed successfully with high reasoning consistency.',
-        suggestedImprovement: parsed.suggestedImprovement || 'Continue fine-tuning on targeted edge cases.',
+        critique: parsed.critique || 'Evaluation completed successfully with high reasoning and linguistic consistency.',
+        suggestedImprovement: parsed.suggestedImprovement || 'Continue fine-tuning on targeted edge cases and conversational nuances.',
         cached: false,
         cacheSource: 'none',
         latencyMs: totalTime,
@@ -248,6 +260,10 @@ Return ONLY a valid JSON object matching this schema:
   let instruction = 86;
   let factualSafety = 85;
   let conciseness = 80;
+  let coherence = 89;
+  let fluency = 91;
+  let relevancy = 90;
+  let appropriateness = 92;
 
   if (hasReference) {
     const keyNumbersRef = referenceAnswer.match(/\d+(\.\d+)?/g) || [];
@@ -255,10 +271,25 @@ Return ONLY a valid JSON object matching this schema:
     const matchRate = keyNumbersRef.length > 0 ? matchedNumbers.length / keyNumbersRef.length : 0.8;
     correctness = Math.round(60 + matchRate * 38);
     reasoning = Math.round(70 + (outputLength > 100 ? 18 : 5));
+    relevancy = Math.round(75 + matchRate * 22);
+  }
+
+  // Coherence & Fluency heuristic based on structure and length
+  if (outputLength > 120 && modelOutput.includes('.')) {
+    coherence = Math.min(97, 86 + Math.round(outputLength / 100));
+    fluency = 92;
   }
 
   const overallScore = Math.round(
-    correctness * 0.35 + reasoning * 0.25 + instruction * 0.2 + factualSafety * 0.15 + conciseness * 0.05
+    correctness * 0.20 +
+    reasoning * 0.15 +
+    instruction * 0.15 +
+    factualSafety * 0.10 +
+    conciseness * 0.05 +
+    coherence * 0.10 +
+    fluency * 0.10 +
+    relevancy * 0.08 +
+    appropriateness * 0.07
   );
 
   const fallbackResult = {
@@ -269,9 +300,13 @@ Return ONLY a valid JSON object matching this schema:
       instruction,
       factualSafety,
       conciseness,
+      coherence,
+      fluency,
+      relevancy,
+      appropriateness,
     },
-    critique: `Model exhibited structured response formatting with ${outputLength > 150 ? 'detailed step derivations' : 'concise answer synthesis'}. Key numerical assertions verified against evaluation vector.`,
-    suggestedImprovement: 'Incorporate additional DPO preference pairs targeting boundary conditions.',
+    critique: `Model exhibited structured response formatting with ${outputLength > 150 ? 'detailed step derivations' : 'concise answer synthesis'}. High coherence (${coherence}/100) and fluency (${fluency}/100) with strong query relevancy.`,
+    suggestedImprovement: 'Incorporate additional DPO preference pairs targeting boundary conditions and conversational tone calibration.',
     cached: false,
     cacheSource: 'none',
     latencyMs: Math.max(12, Date.now() - startTime),

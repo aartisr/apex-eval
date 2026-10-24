@@ -185,6 +185,58 @@ export const EvaluationMatrix: React.FC<EvaluationMatrixProps> = ({
         },
       },
       {
+        accessorKey: 'coherenceScore',
+        header: 'Coherence',
+        cell: (info) => {
+          const val = Number(info.getValue() || 0);
+          if (!val) return <span className="text-slate-500 font-mono text-xs">N/A</span>;
+          return (
+            <span className={`tabular-nums font-mono text-xs ${val >= 90 ? 'text-purple-300 font-semibold' : 'text-slate-300'}`}>
+              {val.toFixed(1)}
+            </span>
+          );
+        },
+      },
+      {
+        accessorKey: 'fluencyScore',
+        header: 'Fluency',
+        cell: (info) => {
+          const val = Number(info.getValue() || 0);
+          if (!val) return <span className="text-slate-500 font-mono text-xs">N/A</span>;
+          return (
+            <span className={`tabular-nums font-mono text-xs ${val >= 90 ? 'text-emerald-300 font-semibold' : 'text-slate-300'}`}>
+              {val.toFixed(1)}
+            </span>
+          );
+        },
+      },
+      {
+        accessorKey: 'relevancyScore',
+        header: 'Relevancy',
+        cell: (info) => {
+          const val = Number(info.getValue() || 0);
+          if (!val) return <span className="text-slate-500 font-mono text-xs">N/A</span>;
+          return (
+            <span className={`tabular-nums font-mono text-xs ${val >= 90 ? 'text-amber-300 font-semibold' : 'text-slate-300'}`}>
+              {val.toFixed(1)}
+            </span>
+          );
+        },
+      },
+      {
+        accessorKey: 'appropriatenessScore',
+        header: 'Appropriateness',
+        cell: (info) => {
+          const val = Number(info.getValue() || 0);
+          if (!val) return <span className="text-slate-500 font-mono text-xs">N/A</span>;
+          return (
+            <span className={`tabular-nums font-mono text-xs ${val >= 90 ? 'text-purple-300 font-semibold' : 'text-slate-300'}`}>
+              {val.toFixed(1)}
+            </span>
+          );
+        },
+      },
+      {
         accessorKey: 'gsm8kScore',
         header: 'GSM8k (Math)',
         cell: (info) => (

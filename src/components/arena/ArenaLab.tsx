@@ -448,6 +448,54 @@ export const ArenaLab: React.FC<ArenaLabProps> = ({
                     <div className="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden">
                       <div className="bg-indigo-500 h-full rounded-full" style={{ width: `${judgeA.criteriaScores.instruction}%` }} />
                     </div>
+
+                    {/* Qualitative NLG & Linguistic Dimensions */}
+                    <div className="pt-2 mt-2 border-t border-slate-900">
+                      <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-2">
+                        Linguistic & Conversational Quality
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-[11px]">
+                        <div className="bg-slate-900/80 p-2 rounded border border-slate-800/80">
+                          <div className="flex justify-between text-slate-400 mb-1">
+                            <span>Coherence</span>
+                            <span className="font-semibold text-slate-200 tabular-nums">{judgeA.criteriaScores.coherence ?? 85}/100</span>
+                          </div>
+                          <div className="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+                            <div className="bg-cyan-400 h-full rounded-full" style={{ width: `${judgeA.criteriaScores.coherence ?? 85}%` }} />
+                          </div>
+                        </div>
+
+                        <div className="bg-slate-900/80 p-2 rounded border border-slate-800/80">
+                          <div className="flex justify-between text-slate-400 mb-1">
+                            <span>Fluency</span>
+                            <span className="font-semibold text-slate-200 tabular-nums">{judgeA.criteriaScores.fluency ?? 85}/100</span>
+                          </div>
+                          <div className="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+                            <div className="bg-emerald-400 h-full rounded-full" style={{ width: `${judgeA.criteriaScores.fluency ?? 85}%` }} />
+                          </div>
+                        </div>
+
+                        <div className="bg-slate-900/80 p-2 rounded border border-slate-800/80">
+                          <div className="flex justify-between text-slate-400 mb-1">
+                            <span>Relevancy</span>
+                            <span className="font-semibold text-slate-200 tabular-nums">{judgeA.criteriaScores.relevancy ?? 85}/100</span>
+                          </div>
+                          <div className="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+                            <div className="bg-amber-400 h-full rounded-full" style={{ width: `${judgeA.criteriaScores.relevancy ?? 85}%` }} />
+                          </div>
+                        </div>
+
+                        <div className="bg-slate-900/80 p-2 rounded border border-slate-800/80">
+                          <div className="flex justify-between text-slate-400 mb-1">
+                            <span>Appropriateness</span>
+                            <span className="font-semibold text-slate-200 tabular-nums">{judgeA.criteriaScores.appropriateness ?? 85}/100</span>
+                          </div>
+                          <div className="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+                            <div className="bg-purple-400 h-full rounded-full" style={{ width: `${judgeA.criteriaScores.appropriateness ?? 85}%` }} />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Qualitative Critique */}
@@ -502,6 +550,54 @@ export const ArenaLab: React.FC<ArenaLabProps> = ({
                     </div>
                     <div className="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden">
                       <div className="bg-emerald-500 h-full rounded-full" style={{ width: `${judgeB.criteriaScores.instruction}%` }} />
+                    </div>
+
+                    {/* Qualitative NLG & Linguistic Dimensions */}
+                    <div className="pt-2 mt-2 border-t border-slate-900">
+                      <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-2">
+                        Linguistic & Conversational Quality
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-[11px]">
+                        <div className="bg-slate-900/80 p-2 rounded border border-slate-800/80">
+                          <div className="flex justify-between text-slate-400 mb-1">
+                            <span>Coherence</span>
+                            <span className="font-semibold text-slate-200 tabular-nums">{judgeB.criteriaScores.coherence ?? 85}/100</span>
+                          </div>
+                          <div className="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+                            <div className="bg-cyan-400 h-full rounded-full" style={{ width: `${judgeB.criteriaScores.coherence ?? 85}%` }} />
+                          </div>
+                        </div>
+
+                        <div className="bg-slate-900/80 p-2 rounded border border-slate-800/80">
+                          <div className="flex justify-between text-slate-400 mb-1">
+                            <span>Fluency</span>
+                            <span className="font-semibold text-slate-200 tabular-nums">{judgeB.criteriaScores.fluency ?? 85}/100</span>
+                          </div>
+                          <div className="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+                            <div className="bg-emerald-400 h-full rounded-full" style={{ width: `${judgeB.criteriaScores.fluency ?? 85}%` }} />
+                          </div>
+                        </div>
+
+                        <div className="bg-slate-900/80 p-2 rounded border border-slate-800/80">
+                          <div className="flex justify-between text-slate-400 mb-1">
+                            <span>Relevancy</span>
+                            <span className="font-semibold text-slate-200 tabular-nums">{judgeB.criteriaScores.relevancy ?? 85}/100</span>
+                          </div>
+                          <div className="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+                            <div className="bg-amber-400 h-full rounded-full" style={{ width: `${judgeB.criteriaScores.relevancy ?? 85}%` }} />
+                          </div>
+                        </div>
+
+                        <div className="bg-slate-900/80 p-2 rounded border border-slate-800/80">
+                          <div className="flex justify-between text-slate-400 mb-1">
+                            <span>Appropriateness</span>
+                            <span className="font-semibold text-slate-200 tabular-nums">{judgeB.criteriaScores.appropriateness ?? 85}/100</span>
+                          </div>
+                          <div className="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+                            <div className="bg-purple-400 h-full rounded-full" style={{ width: `${judgeB.criteriaScores.appropriateness ?? 85}%` }} />
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
