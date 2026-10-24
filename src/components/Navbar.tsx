@@ -9,6 +9,7 @@ import {
   Cpu,
   Layers,
   ArrowRight,
+  FileText,
 } from 'lucide-react';
 import { RedisCacheStats, ModelRecord, CheckpointRecord } from '../types/eval.ts';
 
@@ -16,6 +17,7 @@ interface NavbarProps {
   activeTab: 'matrix' | 'arena' | 'checkpoints' | 'benchmarks' | 'rubric' | 'drift';
   onSelectTab: (tab: 'matrix' | 'arena' | 'checkpoints' | 'benchmarks' | 'rubric' | 'drift') => void;
   onOpenNewRun: () => void;
+  onOpenReportModal: () => void;
   cacheStats: RedisCacheStats | null;
   onRefreshCache: () => void;
   searchQuery: string;
@@ -30,6 +32,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   activeTab,
   onSelectTab,
   onOpenNewRun,
+  onOpenReportModal,
   cacheStats,
   onRefreshCache,
   searchQuery,
@@ -332,6 +335,15 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
             </div>
           )}
+
+          <button
+            onClick={onOpenReportModal}
+            className="flex items-center gap-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-1.5 text-xs font-semibold text-slate-200 shadow-sm transition-all whitespace-nowrap shrink-0"
+            title="Generate Model Evaluation & Health Report"
+          >
+            <FileText className="h-3.5 w-3.5 text-indigo-400" />
+            <span className="hidden md:inline">Health Report</span>
+          </button>
 
           <button
             onClick={onOpenNewRun}

@@ -14,6 +14,7 @@ import { BenchmarkHarness } from './components/benchmarks/BenchmarkHarness.tsx';
 import { JudgeRubricStudio } from './components/rubrics/JudgeRubricStudio.tsx';
 import { DriftAlignmentConsole } from './components/drift/DriftAlignmentConsole.tsx';
 import { NewRunModal } from './components/common/NewRunModal.tsx';
+import { ModelHealthReportModal } from './components/common/ModelHealthReportModal.tsx';
 import {
   INITIAL_MODELS,
   INITIAL_CHECKPOINTS,
@@ -39,6 +40,7 @@ function ApexEvalApp() {
     undefined
   );
   const [isNewRunModalOpen, setIsNewRunModalOpen] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [isClearingCache, setIsClearingCache] = useState(false);
 
   // Models, Checkpoints, Suites state
@@ -121,6 +123,7 @@ function ApexEvalApp() {
         activeTab={activeTab}
         onSelectTab={setActiveTab}
         onOpenNewRun={() => setIsNewRunModalOpen(true)}
+        onOpenReportModal={() => setIsReportModalOpen(true)}
         cacheStats={cacheStats || null}
         onRefreshCache={refetchCacheStats}
         searchQuery={searchQuery}
@@ -191,6 +194,14 @@ function ApexEvalApp() {
         suites={suites}
         models={models}
         onStartRun={handleStartRun}
+      />
+
+      {/* Executive Model Health & Evaluation Report Modal */}
+      <ModelHealthReportModal
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+        models={models}
+        checkpoints={checkpoints}
       />
 
       {/* Discreet Footer */}
