@@ -104,6 +104,7 @@ export const ModelHealthReportModal: React.FC<ModelHealthReportModalProps> = ({
 
 ### 5. Architectural Profile & Quality Metrics
 - **Parameters**: ${model.parametersB}B · **Format**: ${model.quantization.toUpperCase()} · **VRAM**: ${model.memoryGB} GB
+- **Language Perplexity (PPL)**: ${model.perplexity ? `${model.perplexity.toFixed(2)} PPL` : 'N/A'} · **Token Precision**: ${model.precisionScore ? `${model.precisionScore.toFixed(1)}%` : 'N/A'}
 - **Throughput**: ${model.tokensPerSec} tok/s · **Latency P95**: ${model.latencyP95Ms} ms
 - **GSM8K Math**: ${model.gsm8kScore}% · **MMLU**: ${model.mmluScore}% · **HumanEval**: ${model.humanEvalScore}%
 - **JSON Strictness**: 99.4% · **Tool Calling Accuracy**: 96.2%
@@ -202,15 +203,15 @@ export const ModelHealthReportModal: React.FC<ModelHealthReportModalProps> = ({
           {/* 4 Health Dimension Summary Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
             <div className="p-3.5 rounded-lg border border-slate-800 bg-slate-900/60 space-y-1">
-              <span className="text-slate-400 text-[11px] block">Accuracy & Win Rate</span>
+              <span className="text-slate-400 text-[11px] block">Accuracy & Precision</span>
               <div className="text-lg font-bold text-white font-mono">{model.winRate}% Win Rate</div>
-              <span className="text-[10px] text-emerald-400 font-mono">GSM8k: {model.gsm8kScore}% · MMLU: {model.mmluScore}%</span>
+              <span className="text-[10px] text-emerald-400 font-mono">Prec: {model.precisionScore}% · Rec: {model.recallScore}%</span>
             </div>
 
             <div className="p-3.5 rounded-lg border border-slate-800 bg-slate-900/60 space-y-1">
-              <span className="text-slate-400 text-[11px] block">Safety & Hallucinations</span>
-              <div className="text-lg font-bold text-emerald-400 font-mono">{model.hallucinationRate}% Rate</div>
-              <span className="text-[10px] text-slate-400 font-mono">Factual Acc: {model.factualAccuracy}%</span>
+              <span className="text-slate-400 text-[11px] block">Perplexity & Safety</span>
+              <div className="text-lg font-bold text-purple-300 font-mono">{model.perplexity ? `${model.perplexity.toFixed(2)} PPL` : 'N/A'}</div>
+              <span className="text-[10px] text-emerald-400 font-mono">Hallucination: {model.hallucinationRate}%</span>
             </div>
 
             <div className="p-3.5 rounded-lg border border-slate-800 bg-slate-900/60 space-y-1">
@@ -236,20 +237,20 @@ export const ModelHealthReportModal: React.FC<ModelHealthReportModalProps> = ({
               {/* Column 1 */}
               <div className="space-y-2 divide-y divide-slate-800/80">
                 <div className="flex justify-between pt-1">
+                  <span className="text-slate-400 font-sans">Perplexity (PPL):</span>
+                  <span className="text-purple-300 font-bold">{model.perplexity ? `${model.perplexity.toFixed(2)} PPL` : 'N/A'}</span>
+                </div>
+                <div className="flex justify-between pt-1">
+                  <span className="text-slate-400 font-sans">Token Precision:</span>
+                  <span className="text-emerald-400 font-bold">{model.precisionScore ? `${model.precisionScore.toFixed(1)}%` : 'N/A'}</span>
+                </div>
+                <div className="flex justify-between pt-1">
                   <span className="text-slate-400 font-sans">Reasoning Depth Score:</span>
                   <span className="text-white font-bold">{model.reasoningScore} / 100</span>
                 </div>
                 <div className="flex justify-between pt-1">
                   <span className="text-slate-400 font-sans">Instruction Following:</span>
                   <span className="text-emerald-400 font-bold">{model.instructionFollowing}%</span>
-                </div>
-                <div className="flex justify-between pt-1">
-                  <span className="text-slate-400 font-sans">HumanEval Code Pass@1:</span>
-                  <span className="text-indigo-300 font-bold">{model.humanEvalScore}%</span>
-                </div>
-                <div className="flex justify-between pt-1">
-                  <span className="text-slate-400 font-sans">Population Stability Index (PSI):</span>
-                  <span className="text-emerald-400 font-bold">0.082 (Stable)</span>
                 </div>
               </div>
 

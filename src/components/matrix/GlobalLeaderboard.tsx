@@ -20,7 +20,7 @@ interface GlobalLeaderboardProps {
   onOpenDiff: (modelId: string) => void;
 }
 
-export type LeaderboardMetric = 'aggregate' | 'accuracy' | 'speed' | 'efficiency';
+export type LeaderboardMetric = 'aggregate' | 'accuracy' | 'perplexity' | 'speed' | 'efficiency';
 
 export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({
   models,
@@ -53,6 +53,13 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({
           m.mmluScore * 0.20;
         primaryMetricLabel = 'Factual Acc';
         primaryMetricValue = `${m.factualAccuracy}%`;
+      } else if (activeMetric === 'perplexity') {
+        const ppl = m.perplexity || 5.0;
+        const prec = m.precisionScore || 85.0;
+        const pplScore = Math.max(0, Math.min(100, 100 - ppl * 4.5));
+        score = prec * 0.6 + pplScore * 0.4;
+        primaryMetricLabel = 'Perplexity / Precision';
+        primaryMetricValue = `${ppl.toFixed(2)} PPL (${prec.toFixed(1)}% Prec)`;
       } else if (activeMetric === 'speed') {
         const tokScore = Math.min(100, (m.tokensPerSec / 300) * 100);
         const latScore = Math.max(0, 100 - (m.latencyP50Ms / 3));
@@ -94,7 +101,7 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({
               Global Model Evaluation Leaderboard
             </h3>
             <p className="text-xs text-slate-400 mt-0.5">
-              Rank models across aggregate performance, reasoning accuracy, execution speed, and hardware efficiency.
+              Rank models across aggregate index, reasoning accuracy, perplexity & precision, execution speed, and hardware efficiency.
             </p>
           </div>
         </div>
@@ -123,6 +130,18 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({
           >
             <Target className="h-3.5 w-3.5" />
             <span>Accuracy & Reasoning</span>
+          </button>
+
+          <button
+            onClick={() => setActiveMetric('perplexity')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded font-semibold transition-all ${
+              activeMetric === 'perplexity'
+                ? 'bg-purple-600 text-white shadow-sm'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <Sparkles className="h-3.5 w-3.5" />
+            <span>Perplexity & Precision</span>
           </button>
 
           <button
@@ -262,10 +281,10 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({
                 <th className="py-2.5 px-3 w-12 text-center">Rank</th>
                 <th className="py-2.5 px-3">Model</th>
                 <th className="py-2.5 px-3 font-mono">Leaderboard Index</th>
+                <th className="py-2.5 px-3 font-mono">Perplexity (PPL)</th>
+                <th className="py-2.5 px-3 font-mono">Precision</th>
                 <th className="py-2.5 px-3 font-mono">Win Rate</th>
-                <th className="py-2.5 px-3 font-mono">Reasoning</th>
                 <th className="py-2.5 px-3 font-mono">Latency P50</th>
-                <th className="py-2.5 px-3 font-mono">VRAM</th>
                 <th className="py-2.5 px-3 text-right">Actions</th>
               </tr>
             </thead>
@@ -283,10 +302,10 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({
                       </div>
                     </td>
                     <td className="py-2.5 px-3 font-bold text-amber-400">{item.calculatedScore} pts</td>
+                    <td className="py-2.5 px-3 text-purple-300 font-semibold">{m.perplexity ? `${m.perplexity.toFixed(2)} PPL` : 'N/A'}</td>
+                    <td className="py-2.5 px-3 text-emerald-400 font-semibold">{m.precisionScore ? `${m.precisionScore.toFixed(1)}%` : 'N/A'}</td>
                     <td className="py-2.5 px-3 text-slate-300">{m.winRate}%</td>
-                    <td className="py-2.5 px-3 text-slate-300">{m.reasoningScore}</td>
                     <td className="py-2.5 px-3 text-slate-300">{m.latencyP50Ms} ms</td>
-                    <td className="py-2.5 px-3 text-slate-300">{m.memoryGB} GB</td>
                     <td className="py-2.5 px-3 text-right font-sans">
                       <div className="flex items-center justify-end gap-1.5">
                         <button

@@ -336,50 +336,69 @@ export const CheckpointInspector: React.FC<CheckpointInspectorProps> = ({
             </div>
 
             {/* Metrics Compared to Base Weights */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
               <div className="p-3 bg-slate-950/70 rounded-lg border border-slate-800/80">
-                <span className="text-[11px] text-slate-400">Win Rate vs Base</span>
-                <div className="flex items-baseline gap-1.5 mt-1">
-                  <span className="text-lg font-bold text-emerald-400 tabular-nums">
+                <span className="text-[10px] text-slate-400 font-sans block">Win Rate vs Base</span>
+                <div className="flex items-baseline gap-1 mt-1">
+                  <span className="text-base font-bold text-emerald-400 tabular-nums font-mono">
                     {selectedCheckpoint.winRate}%
                   </span>
-                  <span className="text-[10px] text-emerald-400 font-medium">
+                  <span className="text-[10px] text-emerald-400 font-medium font-mono">
                     +{((selectedCheckpoint.winRate - baseCheckpoint.winRate)).toFixed(1)}%
                   </span>
                 </div>
               </div>
 
               <div className="p-3 bg-slate-950/70 rounded-lg border border-slate-800/80">
-                <span className="text-[11px] text-slate-400">Reasoning Depth</span>
-                <div className="flex items-baseline gap-1.5 mt-1">
-                  <span className="text-lg font-bold text-slate-100 tabular-nums">
+                <span className="text-[10px] text-slate-400 font-sans block">Perplexity (PPL)</span>
+                <div className="flex items-baseline gap-1 mt-1">
+                  <span className="text-base font-bold text-purple-300 tabular-nums font-mono">
+                    {(selectedCheckpoint.perplexity || Math.exp(selectedCheckpoint.valLoss)).toFixed(2)}
+                  </span>
+                  <span className="text-[10px] text-purple-400 font-mono">PPL</span>
+                </div>
+              </div>
+
+              <div className="p-3 bg-slate-950/70 rounded-lg border border-slate-800/80">
+                <span className="text-[10px] text-slate-400 font-sans block">Token Precision</span>
+                <div className="flex items-baseline gap-1 mt-1">
+                  <span className="text-base font-bold text-emerald-400 tabular-nums font-mono">
+                    {selectedCheckpoint.precisionScore || 91.4}%
+                  </span>
+                </div>
+              </div>
+
+              <div className="p-3 bg-slate-950/70 rounded-lg border border-slate-800/80">
+                <span className="text-[10px] text-slate-400 font-sans block">Reasoning Depth</span>
+                <div className="flex items-baseline gap-1 mt-1">
+                  <span className="text-base font-bold text-slate-100 tabular-nums font-mono">
                     {selectedCheckpoint.reasoningScore}
                   </span>
-                  <span className="text-[10px] text-emerald-400 font-medium">
+                  <span className="text-[10px] text-emerald-400 font-medium font-mono">
                     +{(selectedCheckpoint.reasoningScore - baseCheckpoint.reasoningScore).toFixed(1)}
                   </span>
                 </div>
               </div>
 
               <div className="p-3 bg-slate-950/70 rounded-lg border border-slate-800/80">
-                <span className="text-[11px] text-slate-400">Train Loss</span>
-                <div className="flex items-baseline gap-1.5 mt-1">
-                  <span className="text-lg font-bold text-indigo-400 tabular-nums font-mono">
+                <span className="text-[10px] text-slate-400 font-sans block">Train / Val Loss</span>
+                <div className="flex items-baseline gap-1 mt-1">
+                  <span className="text-base font-bold text-indigo-400 tabular-nums font-mono">
                     {selectedCheckpoint.trainLoss.toFixed(2)}
                   </span>
                   <span className="text-[10px] text-indigo-300 font-mono">
-                    (val: {selectedCheckpoint.valLoss.toFixed(2)})
+                    ({selectedCheckpoint.valLoss.toFixed(2)})
                   </span>
                 </div>
               </div>
 
               <div className="p-3 bg-slate-950/70 rounded-lg border border-slate-800/80">
-                <span className="text-[11px] text-slate-400">VRAM Footprint</span>
-                <div className="flex items-baseline gap-1.5 mt-1">
-                  <span className="text-lg font-bold text-slate-100 tabular-nums font-mono">
+                <span className="text-[10px] text-slate-400 font-sans block">VRAM Footprint</span>
+                <div className="flex items-baseline gap-1 mt-1">
+                  <span className="text-base font-bold text-slate-100 tabular-nums font-mono">
                     {selectedCheckpoint.memoryGB} GB
                   </span>
-                  <span className="text-[10px] text-emerald-400">
+                  <span className="text-[10px] text-emerald-400 font-mono">
                     -{(((baseCheckpoint.memoryGB - selectedCheckpoint.memoryGB) / baseCheckpoint.memoryGB) * 100).toFixed(0)}%
                   </span>
                 </div>

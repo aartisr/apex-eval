@@ -158,6 +158,33 @@ export const EvaluationMatrix: React.FC<EvaluationMatrixProps> = ({
         ),
       },
       {
+        accessorKey: 'perplexity',
+        header: 'Perplexity (PPL)',
+        cell: (info) => {
+          const val = Number(info.getValue() || 0);
+          if (!val) return <span className="text-slate-500 font-mono text-xs">N/A</span>;
+          const isLowPpl = val <= 3.5;
+          return (
+            <span className={`tabular-nums font-mono text-xs font-semibold px-1.5 py-0.5 rounded ${isLowPpl ? 'text-purple-300 bg-purple-950/80 border border-purple-800/50' : 'text-slate-300'}`}>
+              {val.toFixed(2)} PPL
+            </span>
+          );
+        },
+      },
+      {
+        accessorKey: 'precisionScore',
+        header: 'Precision',
+        cell: (info) => {
+          const val = Number(info.getValue() || 0);
+          if (!val) return <span className="text-slate-500 font-mono text-xs">N/A</span>;
+          return (
+            <span className={`tabular-nums font-mono text-xs ${val >= 90 ? 'text-emerald-400 font-semibold' : 'text-slate-300'}`}>
+              {val.toFixed(1)}%
+            </span>
+          );
+        },
+      },
+      {
         accessorKey: 'gsm8kScore',
         header: 'GSM8k (Math)',
         cell: (info) => (

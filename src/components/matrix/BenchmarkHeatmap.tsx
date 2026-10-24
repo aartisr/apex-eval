@@ -24,7 +24,7 @@ interface HeatmapMetricDef {
   shortLabel: string;
   category: 'core' | 'benchmark' | 'efficiency';
   getValue: (m: ModelRecord) => number;
-  format: (val: number) => string;
+  format: (val: number, m?: ModelRecord) => string;
   description: string;
 }
 
@@ -55,6 +55,28 @@ const HEATMAP_METRICS: HeatmapMetricDef[] = [
     getValue: (m) => m.factualAccuracy,
     format: (v) => `${v.toFixed(1)}%`,
     description: 'Entity extraction precision and factual groundedness.',
+  },
+  {
+    id: 'precision',
+    label: 'Token Precision Score',
+    shortLabel: 'Precision',
+    category: 'core',
+    getValue: (m) => m.precisionScore || 85.0,
+    format: (v) => `${v.toFixed(1)}%`,
+    description: 'Proportion of generated tokens and extracted entities that are strictly correct.',
+  },
+  {
+    id: 'perplexity',
+    label: 'Language Modeling Perplexity (PPL)',
+    shortLabel: 'Perplexity',
+    category: 'core',
+    getValue: (m) => {
+      const ppl = m.perplexity || 5.0;
+      // Convert PPL to 0-100 score for chromatic scale (lower PPL = higher score)
+      return Math.max(20, Math.min(100, Math.round(102 - ppl * 4.2)));
+    },
+    format: (v, m) => (m?.perplexity ? `${m.perplexity.toFixed(2)} PPL` : `${v.toFixed(0)} pts`),
+    description: 'Exp(val_loss) prediction confidence. Lower perplexity indicates superior distribution modeling.',
   },
   {
     id: 'gsm8k',
@@ -337,7 +359,7 @@ export const BenchmarkHeatmap: React.FC<BenchmarkHeatmapProps> = ({
                       }`}
                     >
                       <span className={`font-mono tabular-nums text-xs ${style.text}`}>
-                        {metric.format(val)}
+                        {metric.format(val, model)}
                       </span>
                     </td>
                   );
