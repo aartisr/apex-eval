@@ -123,6 +123,14 @@ export interface MisalignmentMetrics {
   alignmentShiftType: 'sft' | 'dpo' | 'kto' | 'orpo';
 }
 
+export interface RealWorldAlignmentMetrics {
+  jsonSchemaValidityRate: number; // % valid JSON schema adherence under load
+  toolCallingAccuracy: number; // % accurate tool/API parameter parsing
+  ragDistractorNoiseResistance: number; // % accuracy under noisy retrieved context
+  p95LatencyBudgetCompliance: number; // % requests meeting SLA budget
+  costPer1kTasksUSD: number; // Dollar cost per 1,000 real-world queries
+}
+
 export interface EvaluationRunRecord {
   id: string;
   suiteName: string;
