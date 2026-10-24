@@ -24,11 +24,13 @@ import {
   Grid,
   Table,
   Scale,
+  Trophy,
 } from 'lucide-react';
 import { ModelRecord, ModelTier, QuantizationType } from '../../types/eval.ts';
 import { PerformanceTrendChart } from './PerformanceTrendChart.tsx';
 import { BenchmarkHeatmap } from './BenchmarkHeatmap.tsx';
 import { ModelScoreDiffModal } from './ModelScoreDiffModal.tsx';
+import { GlobalLeaderboard } from './GlobalLeaderboard.tsx';
 
 interface EvaluationMatrixProps {
   models: ModelRecord[];
@@ -59,7 +61,7 @@ export const EvaluationMatrix: React.FC<EvaluationMatrixProps> = ({
   const [selectedQuant, setSelectedQuant] = useState<string>('all');
   const [maxParams, setMaxParams] = useState<number>(150);
   const [isChartVisible, setIsChartVisible] = useState(true);
-  const [activeViewTab, setActiveViewTab] = useState<'both' | 'heatmap' | 'table'>('both');
+  const [activeViewTab, setActiveViewTab] = useState<'both' | 'leaderboard' | 'heatmap' | 'table'>('both');
   const [isDiffModalOpen, setIsDiffModalOpen] = useState(false);
   const [diffModelAId, setDiffModelAId] = useState<string>('gemini-3.8-flash');
   const [diffModelBId, setDiffModelBId] = useState<string>('gemma-2-2b-math-dpo-q4');
@@ -395,7 +397,19 @@ export const EvaluationMatrix: React.FC<EvaluationMatrixProps> = ({
         </div>
 
         {/* View Mode Segmented Switch */}
-        <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-md border border-slate-800 text-xs">
+        <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-md border border-slate-800 text-xs flex-wrap">
+          <button
+            onClick={() => setActiveViewTab('leaderboard')}
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded font-medium transition-colors ${
+              activeViewTab === 'leaderboard'
+                ? 'bg-amber-600 text-white shadow-sm'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+            title="Global model ranking leaderboard"
+          >
+            <Trophy className="h-3.5 w-3.5" />
+            <span>Leaderboard</span>
+          </button>
           <button
             onClick={() => setActiveViewTab('heatmap')}
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded font-medium transition-colors ${
@@ -444,6 +458,19 @@ export const EvaluationMatrix: React.FC<EvaluationMatrixProps> = ({
           <span>Side-by-Side Diff</span>
         </button>
       </div>
+
+      {/* Global Model Leaderboard */}
+      {(activeViewTab === 'leaderboard' || activeViewTab === 'both') && (
+        <GlobalLeaderboard
+          models={filteredData}
+          onSelectForArena={onSelectForArena}
+          onInspectCheckpoints={onInspectCheckpoints}
+          onOpenDiff={(id) => {
+            setDiffModelBId(id);
+            setIsDiffModalOpen(true);
+          }}
+        />
+      )}
 
       {/* Benchmark Chromatic Heatmap Matrix */}
       {(activeViewTab === 'heatmap' || activeViewTab === 'both') && (
