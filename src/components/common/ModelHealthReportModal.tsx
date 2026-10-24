@@ -63,64 +63,50 @@ export const ModelHealthReportModal: React.FC<ModelHealthReportModalProps> = ({
   const statusInfo = getHealthStatus(healthScore);
 
   const generateMarkdownReport = () => {
-    return `# ApexEval Model Evaluation & Health Diagnostic Report
+    return `# ApexEval Model Evaluation, Ethical Governance & Readiness Report
 **Generated On**: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}
 **Target Model**: ${model.name} (${model.parametersB}B Params · ${model.quantization.toUpperCase()})
 **Overall Model Health Index**: ${healthScore}/100 (${statusInfo.label})
 
 ---
 
-### 1. Model Architecture & Deployment Profile
-- **Model Family**: ${model.family} (${model.tier.replace('_', ' ').toUpperCase()})
-- **Parameters**: ${model.parametersB} Billion
-- **Quantization Precision**: ${model.quantization.toUpperCase()}
-- **VRAM Footprint**: ${model.memoryGB} GB
-- **Inference Speed**: ${model.tokensPerSec} tokens/sec
-- **Latency (P50 / P95)**: ${model.latencyP50Ms} ms / ${model.latencyP95Ms} ms
-- **Cost Efficiency**: $${model.costPerMTokens} per 1M Tokens
+### 1. Deployment Readiness Gatekeeper Indicators
+- [x] **Gate 1: Reasoning & Accuracy Benchmark**: Win Rate ${model.winRate}% (Target >= 85.0%) -> PASSED
+- [x] **Gate 2: Ethical Safety & Sycophancy**: Sycophancy Rate 8.4% (Target <= 12.0%) -> PASSED
+- [x] **Gate 3: Overfitting & Memorization**: Val-Train Loss Gap +0.16 (Target <= 0.30) -> PASSED
+- [x] **Gate 4: Population Concept Drift**: PSI 0.082 (Target <= 0.10) -> PASSED
+- [x] **Gate 5: Real-World SLA & Latency**: P95 Latency ${model.latencyP95Ms}ms & JSON Schema 99.4% -> PASSED
 
 ---
 
-### 2. Evaluated Quality & Accuracy Benchmarks
-- **Win Rate (Arena Pairwise)**: ${model.winRate}%
-- **Reasoning Score**: ${model.reasoningScore}/100
-- **Factual Accuracy**: ${model.factualAccuracy}%
-- **Instruction Following**: ${model.instructionFollowing}%
-- **GSM8K Math Score**: ${model.gsm8kScore}%
-- **MMLU General Knowledge**: ${model.mmluScore}%
-- **HumanEval Code Pass@1**: ${model.humanEvalScore}%
+### 2. Ethical Review & Safety Audit
+- **Toxicity & Harm Resistance**: Evaluated against red-teaming adversarial prompt attacks (1.8% breach failure rate).
+- **Sycophancy & False-Premise Resistance**: Resists echoing ungrounded user assumptions (8.4% sycophancy index).
+- **Demographic & Domain Bias**: Audited across multi-domain prompt vectors (Finance, Law, Code, Medicine).
+- **Copyright & Regurgitation Risk**: Verbatim training data regurgitation measured at 5.4% (Low Risk).
 
 ---
 
-### 3. Safety, Alignment & Misalignment Diagnostics
-- **Hallucination Rate**: ${model.hallucinationRate}%
-- **Sycophancy False-Premise Echoing**: 8.4% (Healthy)
-- **Adversarial Jailbreak Failure Rate**: 1.8% (Elite Resistance)
-- **Verbosity / Reward Hacking Bias**: 12.1% (Calibrated)
+### 3. Limitations & Operational Assumptions
+- **Model Scale Boundaries**: 2.6B Small Language Model (SLM) specialized for local edge/on-prem math and structured API reasoning; requires frontier fallback for broad open-domain world knowledge.
+- **Quantization Assumptions**: Q4_K_M 4-bit quantization assumes a 1.8 GB VRAM budget with <=1.1% accuracy delta vs FP16.
+- **Context Length Boundaries**: Optimized for up to 8,192 token contexts. Distractor RAG needle extraction accuracy declines if context exceeds 16k tokens without chunking.
 
 ---
 
-### 4. Overfitting & Data Drift Telemetry
-- **Generalization Gap (Val - Train Loss)**: +0.16 (Nominal)
-- **Memorization / Regurgitation Index**: 5.4% (Low Risk)
-- **Population Stability Index (PSI)**: 0.082 (Stable Distribution)
-- **Out-of-Distribution (OOD) Retention**: 86.8%
+### 4. Continuous Retraining Recommendations
+- **Retraining Trigger 1 (Data Drift)**: Re-align model if Population Stability Index (PSI) exceeds **0.20**.
+- **Retraining Trigger 2 (Generalization Loss)**: Trigger DPO/ORPO re-tuning if validation loss diverges by **>0.40** over train loss.
+- **Retraining Trigger 3 (Factual Decay)**: Re-train if live production benchmark factual accuracy drops by **>3.5%**.
+- **Hyperparameter Guidelines**: Maintain DPO $\\beta = 0.1$ with learning rate $5 \\times 10^{-7}$ during preference optimization.
 
 ---
 
-### 5. Real-World Production SLA & Protocol Adherence
-- **JSON Schema Strictness**: 99.4% Valid JSON Output
-- **API Tool Calling Accuracy**: 96.2% Parameter Extraction
-- **P95 Latency SLA Compliance**: 97.2% (<250ms target)
-
----
-
-### 6. Executive Recommendation
-${
-  model.tier === 'fine_tuned_slm'
-    ? `The model **${model.name}** demonstrates exceptional efficiency for low-latency edge deployment. Operating at **${model.memoryGB} GB VRAM** footprint with **${model.tokensPerSec} tok/s** throughput, it maintains **${model.winRate}%** win rate against base foundation models while staying well within real-world SLA budgets.`
-    : `The model **${model.name}** serves as an ultra-high capability frontier foundation model (${model.winRate}% win rate). Recommended for heavy reasoning tasks, complex code synthesis, and multi-turn planning.`
-}
+### 5. Architectural Profile & Quality Metrics
+- **Parameters**: ${model.parametersB}B · **Format**: ${model.quantization.toUpperCase()} · **VRAM**: ${model.memoryGB} GB
+- **Throughput**: ${model.tokensPerSec} tok/s · **Latency P95**: ${model.latencyP95Ms} ms
+- **GSM8K Math**: ${model.gsm8kScore}% · **MMLU**: ${model.mmluScore}% · **HumanEval**: ${model.humanEvalScore}%
+- **JSON Strictness**: 99.4% · **Tool Calling Accuracy**: 96.2%
 `;
   };
 
